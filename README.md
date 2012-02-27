@@ -1,0 +1,1 @@
+This is the manager component for dis.io
