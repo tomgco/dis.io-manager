@@ -1,7 +1,7 @@
 var colors = require('colors')
   , mdns = require('mdns')
   , packageJSON = require('./package.json')
-  , appVersion = packageJSON.version.replace(/\./gi, '-')
+  , appVersion = packageJSON.version.split('.').slice(0, -1).join('-')
   ;
 
 var txtRecord = {
