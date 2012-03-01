@@ -5,7 +5,7 @@ var colors = require('colors')
   ;
 
 var txtRecord = {
-    name: 'dis.io Manager'
+    name: 'dis.io manager'
 };
 
 var ad = mdns.createAdvertisement(mdns.udp('disio-manager', 'v' + appVersion), 1337, { 'txtRecord': txtRecord });
