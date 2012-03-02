@@ -1,0 +1,7 @@
+{
+  "database": {
+      "host": "10.0.0.61"
+    , "port": 27017
+    , "name": "disio-manager"
+  }
+}
