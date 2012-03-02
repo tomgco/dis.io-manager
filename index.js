@@ -26,7 +26,7 @@ server.get('/echo/:name', function (req, res, next) {
 });
 
 server.listen(function() {
-  console.log('Running as disio-manager@' + appVersion);
+  console.log('Running as ' + 'disio-manager' + '@'.yellow + appVersion);
   var ad = mdns.createAdvertisement(mdns.udp('disio-manager', appVersion), server.address().port, { 'txtRecord': txtRecord });
   ad.start();
 });
