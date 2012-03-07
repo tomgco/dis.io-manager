@@ -28,7 +28,17 @@ server.get('/echo/:name', function (req, res, next) {
   return next();
 });
 
-server.get('/task/exists', routes.task.exists);
+// Rest Service.
+
+// server.get('/task/exists', routes.task.exists);
+
+// server.post('/task/create', routes.task.create);
+
+// server.put('/task/edit', routes.task.edit);
+
+// server.del('/task/remove', routes.task.remove);
+
+// Pubsub for totifing when nodes pop up or down
 
 databaseAdaptor.createConnection(function(connection) {
   server.listen(function() {
