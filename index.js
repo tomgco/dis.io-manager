@@ -4,8 +4,7 @@ var colors = require('colors')
   , mdns = require('mdns')
   , packageJSON = require('./package.json')
   , appVersion = 'v' + packageJSON.version.split('.').slice(0, -1).join('-')
-  , restify = require('restify')
-  , routes = require('./routes')
+  , RestService = require('./lib/restService')
   ;
 
 console.warn('This package depends on a mongodb store.'.red);
@@ -15,32 +14,12 @@ var txtRecord = {
   , taskId: Number
 };
 
-var server = restify.createServer({
-  name: 'disio-manager'
-});
-
-server.use(restify.acceptParser(server.acceptable));
-server.use(restify.queryParser());
-server.use(restify.bodyParser());
-
-server.get('/echo/:name', function (req, res, next) {
-  res.send(req.params);
-  return next();
-});
-
-// Rest Service.
-
-// server.get('/task/exists', routes.task.exists);
-
-// server.post('/task/create', routes.task.create);
-
-// server.put('/task/edit', routes.task.edit);
-
-// server.del('/task/remove', routes.task.remove);
-
 // Pubsub for totifing when nodes pop up or down
 
 databaseAdaptor.createConnection(function(connection) {
+
+  var server = RestService.createRestService(connection);
+
   server.listen(function() {
     console.log('Running as ' + 'disio-manager' + '@'.yellow + appVersion + ' at ' + server.address().address + ':' + server.address().port);
     var ad = mdns.createAdvertisement(mdns.udp('disio-manager', appVersion), server.address().port, { 'txtRecord': txtRecord });
