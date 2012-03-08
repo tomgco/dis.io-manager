@@ -14,6 +14,7 @@
     , "mdns": "0.0.5"
     , "restify": "1.1.X"
     , "mongodb": "0.9.X"
+    , "piton-pipe": "*"
   },
   "devDependencies": {}
 }
