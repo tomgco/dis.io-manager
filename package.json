@@ -1,7 +1,7 @@
 {
   "author": "Tom Gallacher <tomgallacher23@gmail.com> (tomg.co)",
   "name": "dis.io",
-  "version": "0.0.1a",
+  "version": "0.0.2",
   "repository": {
     "url": ""
   },
@@ -10,11 +10,12 @@
   },
   "main": "./index.js",
   "dependencies": {
-      "colors": "0.6.X"
-    , "mdns": "0.0.5"
-    , "restify": "1.1.X"
-    , "mongodb": "0.9.X"
-    , "piton-pipe": "*"
+    "colors": "0.6.X",
+    "mdns": "0.0.5",
+    "restify": "1.1.X",
+    "mongodb": "0.9.X",
+    "piton-pipe": "*"
   },
-  "devDependencies": {}
+  "devDependencies": {},
+  "optionalDependencies": {}
 }
