@@ -32,6 +32,6 @@ databaseAdaptor.createConnection(function(connection) {
     console.log('zmq running as ' + info.address + ':' + info.port + ' version - ' + info.zmqVersion);
     var ad = mdns.createAdvertisement(mdns.udp('zmq-manager', appVersion), info.port, { 'txtRecord': txtRecord });
     ad.start();
+    zmq.send(/* Task.getWorkUnit */);
   });
-  zmq.send(/* Task.getWorkUnit */);
 });
