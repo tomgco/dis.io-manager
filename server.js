@@ -5,6 +5,7 @@ var colors = require('colors')
   , packageJSON = require('./package.json')
   , appVersion = 'v' + packageJSON.version.split('.').slice(0, -1).join('-')
   , RestService = require('./lib/restService')
+  , ZmqService = require('./lib/zmqService')
   ;
 
 console.warn('This package depends on a mongodb store.'.red);
@@ -25,4 +26,12 @@ databaseAdaptor.createConnection(function(connection) {
     var ad = mdns.createAdvertisement(mdns.udp('disio-manager', appVersion), server.address().port, { 'txtRecord': txtRecord });
     ad.start();
   });
+
+  var zmq = ZmqService.createZmqService(connection);
+  zmq.on('bind', function(info) {
+    console.log('zmq running as ' + info.address + ':' + info.port + ' version - ' + info.zmqVersion);
+    var ad = mdns.createAdvertisement(mdns.udp('zmq-manager', appVersion), info.port, { 'txtRecord': txtRecord });
+    ad.start();
+  });
+  zmq.send(/* Task.getWorkUnit */);
 });
