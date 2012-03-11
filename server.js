@@ -21,13 +21,12 @@ databaseAdaptor.createConnection(function(connection) {
 
   var zmq = ZmqService.createZmqService(connection);
   zmq.on('bind', function(info) {
-    startDiscovery('zmq-manager', info.port, info.zmqVersion);
-
     zmq.send(/* Task.getWorkUnit */);
 
     var server = RestService.createRestService(connection);
 
     server.listen(function() {
+      startDiscovery('zmq-manager', info.port, info.zmqVersion);
       startDiscovery('disio-manager', server.address().port, appVersion);
     });
 
@@ -38,4 +37,5 @@ function startDiscovery(name, port, version) {
   console.log('Running ' + name + '@'.yellow + appVersion + ' on ' + '0.0.0.0:' + port);
   var ad = mdns.createAdvertisement(mdns.udp(name, appVersion), port, { 'txtRecord': txtRecord });
   ad.start();
+  // return ad; // to update txtrecord
 }
