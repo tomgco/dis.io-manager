@@ -19,19 +19,23 @@ var txtRecord = {
 
 databaseAdaptor.createConnection(function(connection) {
 
-  var server = RestService.createRestService(connection);
-
-  server.listen(function() {
-    console.log('Running as ' + 'disio-manager' + '@'.yellow + appVersion + ' at ' + server.address().address + ':' + server.address().port);
-    var ad = mdns.createAdvertisement(mdns.udp('disio-manager', appVersion), server.address().port, { 'txtRecord': txtRecord });
-    ad.start();
-  });
-
   var zmq = ZmqService.createZmqService(connection);
   zmq.on('bind', function(info) {
-    console.log('zmq running as ' + info.address + ':' + info.port + ' version - ' + info.zmqVersion);
-    var ad = mdns.createAdvertisement(mdns.udp('zmq-manager', appVersion), info.port, { 'txtRecord': txtRecord });
-    ad.start();
+    startDiscovery('zmq-manager', info.port, info.zmqVersion);
+
     zmq.send(/* Task.getWorkUnit */);
+
+    var server = RestService.createRestService(connection);
+
+    server.listen(function() {
+      startDiscovery('disio-manager', server.address().port, appVersion);
+    });
+
   });
 });
+
+function startDiscovery(name, port, version) {
+  console.log('Running ' + name + '@'.yellow + appVersion + ' on ' + '0.0.0.0:' + port);
+  var ad = mdns.createAdvertisement(mdns.udp(name, appVersion), port, { 'txtRecord': txtRecord });
+  ad.start();
+}
