@@ -16,7 +16,6 @@ var txtRecord = {
 };
 
 // Pubsub for totifing when nodes pop up or down
-
 databaseAdaptor.createConnection(function(connection) {
 
   var zmq = ZmqService.createZmqService(connection);
