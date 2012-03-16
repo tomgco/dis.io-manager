@@ -1,6 +1,6 @@
 var colors = require('colors')
   , properties = require('./properties')
-  , databaseAdaptor = require('./lib/database').createDatabaseAdaptor(properties.database)
+  , databaseAdaptor = require('dis.io-mongo-crud').database.createDatabaseAdaptor(properties.database)
   , mdns = require('mdns')
   , packageJSON = require('./package.json')
   , appVersion = 'v' + packageJSON.version.split('.').slice(0, -1).join('-')
@@ -23,7 +23,9 @@ databaseAdaptor.createConnection(function(connection) {
   zmq.on('bind', function(info) {
     zmq.send(/* Task.getWorkUnit */);
 
-    var server = RestService.createRestService(connection);
+    var server = RestService.createRestService(connection)
+      
+      ;
 
     server.listen(function() {
       startDiscovery('zmq-manager', info.port, info.zmqVersion);
