@@ -1,6 +1,7 @@
 var colors = require('colors')
   , properties = require('./properties')
-  , databaseAdaptor = require('dis.io-mongo-crud').database.createDatabaseAdaptor(properties.database)
+  , mongoDelegate = require('dis.io-mongo-crud')
+  , databaseAdaptor = mongoDelegate.database.createDatabaseAdaptor(properties.database)
   , mdns = require('mdns')
   , packageJSON = require('./package.json')
   , appVersion = 'v' + packageJSON.version.split('.').slice(0, -1).join('-')
@@ -12,7 +13,7 @@ console.warn('This package depends on a mongodb store.'.red);
 
 var txtRecord = {
     name: 'dis.io manager'
-  , taskId: Number
+  , taskId: NaN
 };
 
 // Pubsub for totifing when nodes pop up or down
@@ -23,7 +24,6 @@ databaseAdaptor.createConnection(function(connection) {
     zmq.send(/* Task.getWorkUnit */);
 
     var server = RestService.createRestService(connection)
-      
       ;
 
     server.listen(function() {
