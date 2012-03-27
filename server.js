@@ -1,5 +1,5 @@
 require('console-trace');
-console.traceAlways = true;
+// console.traceAlways = true; // Uncomment to show line numbers with every console.log(); call
 
 var colors = require('colors')
   , properties = require('./properties')
@@ -11,13 +11,10 @@ var colors = require('colors')
   , RestService = require('./lib/restService')
   , ZmqService = require('./lib/zmqService')
   , Manager = require('./lib/manager')
+  , availability = require('availability')
   ;
 
 console.warn('This package depends on a mongodb store.'.red);
-
-var txtRecord = {
-    name: 'dis.io manager'
-};
 
 // Pubsub for totifing when nodes pop up or down
 databaseAdaptor.createConnection(function(connection) {
@@ -27,20 +24,27 @@ databaseAdaptor.createConnection(function(connection) {
     ;
   zmq.on('bind', function(info) {
     zmq.send(/* Task.getWorkUnit */);
-
     var server = RestService.createRestService(connection)
+      , availabilityServer = availability.createServer()
       ;
 
     server.listen(function() {
-      startDiscovery('zmq-manager', info.port, info.zmqVersion);
-      startDiscovery('disio-manager', server.address().port, appVersion);
+      startDiscovery('disio-manager', server.address().port, appVersion, info, availabilityServer);
     });
 
   });
 });
 
-function startDiscovery(name, port, version) {
+function startDiscovery(name, port, version, info, availabilityServer) {
   console.log('Running ' + name + '@'.yellow + appVersion + ' on ' + '0.0.0.0:' + port);
-  var ad = mdns.createAdvertisement(mdns.udp(name, appVersion), port, { 'txtRecord': txtRecord });
+  console.log('Running zmq-' + name + '@'.yellow + appVersion + ' on ' + '0.0.0.0:' + info.port);
+  console.log('Running availability-server' +'@'.yellow + appVersion + ' on ' + '0.0.0.0:' + availabilityServer.address().port);
+  var ad = mdns.createAdvertisement(mdns.udp(name, appVersion), port, { 'txtRecord': {
+          name: 'dis.io manager'
+        , zmqPort: info.port
+        , zmqVersion: info.zmqVersion
+        , availabilityPort: availabilityServer.address().port
+      }
+    });
   ad.start();
 }
