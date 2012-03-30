@@ -27,16 +27,12 @@ databaseAdaptor.createConnection(function(connection) {
     zmq.on('bind', function(info) {
       var server = RestService.createRestService(connection)
         , config = {
+          // override the reply from availability ;]
           onConnection: function(socket) {
-            // socket.write(socket.remoteAddress + ':' + socket.remotePort);
-            // socket.pipe(socket);
-            // socket.remoteAddress + '-' + buf.toString()
             socket.on('data', function(buf) {
               var uniqueId = socket.remoteAddress + '-' + buf.toString()
                 , allowed = manager.allowedToConnect(uniqueId)
                 ;
-
-              //TODO: here is where I will remove old / stale distributors after x amount of time.
 
               if (allowed) {
                 manager.connected[uniqueId] = +Date.now();
