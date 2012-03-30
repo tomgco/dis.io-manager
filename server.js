@@ -72,6 +72,9 @@ function startDiscovery(name, port, version, info, availabilityServer) {
 
 // helper utility to get things started.
 function getTaskIdFromCLI() {
+  if (process.argv.indexOf('--id') === -1) {
+    return undefined;
+  }
   var index = process.argv.indexOf('--id') + 1;
   return process.argv[index];
 }
