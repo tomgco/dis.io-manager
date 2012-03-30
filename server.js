@@ -44,7 +44,7 @@ databaseAdaptor.createConnection(function(connection) {
         , availabilityServer = availability.createServer(config)
         ;
 
-      setTimeout(function() {zmq.send(/* Task.getWorkUnit */);}, 4000); // wait until the required distributors are up befor starting.
+      // setTimeout(function() {zmq.send(/* Task.getWorkUnit */);}, 4000); // wait until the required distributors are up before starting.
       server.listen(function() {
         startDiscovery('disio-manager', server.address().port, appVersion, info, availabilityServer);
       });
