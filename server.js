@@ -13,28 +13,53 @@ var colors = require('colors')
   , Manager = require('./lib/manager')
   , availability = require('availability')
   ;
-
 console.warn('This package depends on a mongodb store.'.red);
 
-// Pubsub for totifing when nodes pop up or down
+/**
+ *  On connection to DB start by getting ID and then starting, this is the main work horse
+ */
 databaseAdaptor.createConnection(function(connection) {
 
-  var manager = Manager.createManager()
-    , zmq = ZmqService.createZmqService(connection, manager)
+  var manager = Manager.createManager(connection, getTaskIdFromCLI())
     ;
-  zmq.on('bind', function(info) {
-    zmq.send(/* Task.getWorkUnit */);
-    var server = RestService.createRestService(connection)
-      , availabilityServer = availability.createServer()
-      ;
+  manager.on('ready', function() {
+    var zmq = ZmqService.createZmqService(manager);
+    zmq.on('bind', function(info) {
+      var server = RestService.createRestService(connection)
+        , config = {
+          onConnection: function(socket) {
+            // socket.write(socket.remoteAddress + ':' + socket.remotePort);
+            // socket.pipe(socket);
+            // socket.remoteAddress + '-' + buf.toString()
+            socket.on('data', function(buf) {
+              var uniqueId = socket.remoteAddress + '-' + buf.toString()
+                , allowed = manager.allowedToConnect(uniqueId)
+                ;
 
-    server.listen(function() {
-      startDiscovery('disio-manager', server.address().port, appVersion, info, availabilityServer);
+              //TODO: here is where I will remove old / stale distributors after x amount of time.
+
+              if (allowed) {
+                manager.connected[uniqueId] = +Date.now();
+              }
+              socket.write(allowed.toString());
+            });
+          }
+        }
+        , availabilityServer = availability.createServer(config)
+        ;
+
+      setTimeout(function() {zmq.send(/* Task.getWorkUnit */);}, 4000); // wait until the required distributors are up befor starting.
+      server.listen(function() {
+        startDiscovery('disio-manager', server.address().port, appVersion, info, availabilityServer);
+      });
     });
-
   });
 });
 
+/**
+ *  Starts the Bonjour / zeroconf service for advertising up services
+ *  and logs them
+ */
 function startDiscovery(name, port, version, info, availabilityServer) {
   console.log('Running ' + name + '@'.yellow + appVersion + ' on ' + '0.0.0.0:' + port);
   console.log('Running zmq-' + name + '@'.yellow + appVersion + ' on ' + '0.0.0.0:' + info.port);
@@ -47,4 +72,10 @@ function startDiscovery(name, port, version, info, availabilityServer) {
       }
     });
   ad.start();
+}
+
+// helper utility to get things started.
+function getTaskIdFromCLI() {
+  var index = process.argv.indexOf('--id') + 1;
+  return process.argv[index];
 }
