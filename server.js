@@ -46,7 +46,7 @@ databaseAdaptor.createConnection(function(connection) {
 
       // setTimeout(function() {zmq.send(/* Task.getWorkUnit */);}, 4000); // wait until the required distributors are up before starting.
       server.listen(function() {
-        startDiscovery('disio-manager', server.address().port, appVersion, info, availabilityServer);
+        startDiscovery('disio-manager', server.address().port, appVersion, info, availabilityServer, manager);
       });
     });
   });
@@ -56,7 +56,7 @@ databaseAdaptor.createConnection(function(connection) {
  *  Starts the Bonjour / zeroconf service for advertising up services
  *  and logs them
  */
-function startDiscovery(name, port, version, info, availabilityServer) {
+function startDiscovery(name, port, version, info, availabilityServer, manager) {
   console.log('Running ' + name + '@'.yellow + appVersion + ' on ' + '0.0.0.0:' + port);
   console.log('Running zmq-' + name + '@'.yellow + appVersion + ' on ' + '0.0.0.0:' + info.port);
   console.log('Running availability-server' +'@'.yellow + appVersion + ' on ' + '0.0.0.0:' + availabilityServer.address().port);
@@ -65,6 +65,8 @@ function startDiscovery(name, port, version, info, availabilityServer) {
         , zmqPort: info.port
         , zmqVersion: info.zmqVersion
         , availabilityPort: availabilityServer.address().port
+        , maxDistributors: manager.getMaxDistributors()
+        , id: manager.getId()
       }
     });
   ad.start();
