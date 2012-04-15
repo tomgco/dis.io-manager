@@ -80,3 +80,5 @@ function getTaskIdFromCLI() {
   var index = process.argv.indexOf('--id') + 1;
   return process.argv[index];
 }
+
+console.log('This process is pid ' + process.pid);
