@@ -72,7 +72,7 @@ function startDiscovery(name, port, version, info, availabilityServer, manager) 
   ad.start();
 }
 
-// helper utility to get things started.
+// helper utility to get things started. so that a manager is always started with an ID
 function getTaskIdFromCLI() {
   if (process.argv.indexOf('--id') === -1) {
     return undefined;

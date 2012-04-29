@@ -16,8 +16,9 @@
     "mongodb": "0.9.X",
     "piton-pipe": "*",
     "zmq": "2.0.X",
-    "console-trace": "*"
-  },
+    "console-trace": "*",
+    "async":"*"
+},
   "devDependencies": {},
   "optionalDependencies": {},
   "scripts": {
